@@ -1,19 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <base href="/" />
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Omelet - Random Video Chat</title>
     <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
-    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
     <style>
         :root {
             --primary: #ffb700;
             --secondary: #ff7b00;
             --dark: #333;
             --light: #fff;
-            --hover: #ff9f00;
-            --transition: all 0.3s ease;
+            --accent: #ff4444;
         }
 
         * {
@@ -34,7 +33,7 @@
             background: var(--primary);
             padding: 1rem;
             text-align: center;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
 
         .logo {
@@ -42,6 +41,14 @@
             font-weight: bold;
             color: var(--light);
             text-shadow: 2px 2px var(--secondary);
+            animation: crack 2s infinite;
+        }
+
+        @keyframes crack {
+            0% { transform: rotate(0deg); }
+            25% { transform: rotate(-5deg); }
+            75% { transform: rotate(5deg); }
+            100% { transform: rotate(0deg); }
         }
 
         .video-container {
@@ -51,7 +58,7 @@
             padding: 1rem;
             background: var(--light);
             border-radius: 10px;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 1rem;
@@ -85,8 +92,9 @@
             border: none;
             border-radius: 25px;
             cursor: pointer;
-            transition: var(--transition);
+            transition: all 0.3s ease;
             margin: 0.5rem;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
         }
 
         .btn-primary {
@@ -95,16 +103,17 @@
         }
 
         .btn-primary:hover {
-            background: var(--hover);
+            background: var(--secondary);
+            transform: translateY(-2px);
         }
 
         .btn-danger {
-            background: #ff4444;
+            background: var(--accent);
             color: var(--light);
         }
 
         .btn-danger:hover {
-            background: #cc0000;
+            background: darkred;
         }
 
         .status {
@@ -120,12 +129,16 @@
             padding: 1rem;
             background: var(--dark);
             color: var(--light);
-            position: relative;
+        }
+
+        .wolftech {
+            font-weight: bold;
+            color: var(--primary);
         }
     </style>
 </head>
 <body>
-    <header class="header">
+    <header>
         <h1 class="logo">Omel<span>e</span>t</h1>
     </header>
 
@@ -153,13 +166,49 @@
         (function() {
             let localStream;
             let peerConnection;
-            const socket = io('https://your-signaling-server-url'); // Replace with your signaling server URL
-            const configuration = {
-                iceServers: [
-                    { urls: 'stun:stun.l.google.com:19302' },
-                    { urls: 'turn:turn.cloudflare.com:3478', username: 'username', credential: 'credential' } // Replace with valid TURN credentials
-                ]
-            };
+            let isInChat = false;
+
+            async function createPeerConnection() {
+                const configuration = {
+                    iceServers: [
+                        {
+                            urls: 'turn:openrelay.metered.ca:80',
+                            username: 'openrelayproject',
+                            credential: 'openrelayproject'
+                        }
+                    ]
+                };
+
+                peerConnection = new RTCPeerConnection(configuration);
+                
+                localStream.getTracks().forEach(track => {
+                    peerConnection.addTrack(track, localStream);
+                });
+
+                peerConnection.ontrack = event => {
+                    document.getElementById('remoteVideo').srcObject = event.streams[0];
+                };
+
+                peerConnection.onicecandidate = event => {
+                    if (event.candidate) {
+                        console.log('New ICE candidate:', event.candidate);
+                    }
+                };
+
+                peerConnection.oniceconnectionstatechange = () => {
+                    if (peerConnection.iceConnectionState === 'disconnected') {
+                        handleDisconnect();
+                    }
+                };
+
+                try {
+                    const offer = await peerConnection.createOffer();
+                    await peerConnection.setLocalDescription(offer);
+                    console.log('Created offer:', offer);
+                } catch (error) {
+                    console.error('Error creating offer:', error);
+                }
+            }
 
             async function setupMediaStream() {
                 try {
@@ -168,76 +217,59 @@
                         audio: true
                     });
                     document.getElementById('localVideo').srcObject = localStream;
-                    socket.emit('join'); // Join the signaling server
+                    await createPeerConnection();
+                    document.getElementById('status').textContent = 'Waiting for someone to connect...';
+                    enableChat();
                 } catch (err) {
                     console.error('Error accessing media devices:', err);
                     document.getElementById('status').textContent = 'Failed to access camera/microphone';
                 }
             }
 
-            socket.on('offer', async (offer) => {
-                peerConnection = new RTCPeerConnection(configuration);
-                localStream.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
-                await peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
-
-                const answer = await peerConnection.createAnswer();
-                await peerConnection.setLocalDescription(answer);
-                socket.emit('answer', answer);
-                document.getElementById('status').textContent = 'Connected to a peer!';
-
-                peerConnection.onicecandidate = (event) => {
-                    if (event.candidate) {
-                        socket.emit('candidate', event.candidate);
-                    }
-                };
-
-                peerConnection.ontrack = (event) => {
-                    document.getElementById('remoteVideo').srcObject = event.streams[0];
-                };
-
-                peerConnection.oniceconnectionstatechange = () => {
-                    if (peerConnection.iceConnectionState === 'disconnected') {
-                        handleDisconnect();
-                    }
-                };
-            });
-
-            socket.on('answer', async (answer) => {
-                await peerConnection.setRemoteDescription(new RTCSessionDescription(answer));
-            });
-
-            socket.on('candidate', async (candidate) => {
-                await peerConnection.addIceCandidate(new RTCIceCandidate(candidate));
-            });
-
             function handleDisconnect() {
                 document.getElementById('remoteVideo').srcObject = null;
                 document.getElementById('status').textContent = 'Disconnected. Click "Skip" to find someone new.';
                 document.getElementById('skipBtn').disabled = false;
                 document.getElementById('endChat').disabled = true;
-                peerConnection.close();
-                peerConnection = null;
+                isInChat = false;
+            }
+
+            function enableChat() {
+                console.log('Chat started');
+                document.getElementById('skipBtn').disabled = false;
+                document.getElementById('endChat').disabled = false;
+                isInChat = true;
+
+                // Add event listeners for buttons
+                document.getElementById('skipBtn').addEventListener('click', skipChat);
+                document.getElementById('endChat').addEventListener('click', endChat);
             }
 
             async function skipChat() {
-                if (peerConnection) {
-                    peerConnection.close();
-                    peerConnection = null;
-                }
-                await setupMediaStream();
+                console.log('Skipping chat...');
+                await endChat(); // End current chat
+                await setupMediaStream(); // Start new chat
             }
 
-            document.getElementById('skipBtn').addEventListener('click', skipChat);
-            document.getElementById('endChat').addEventListener('click', () => {
+            async function endChat() {
+                console.log('Ending chat...');
                 if (peerConnection) {
                     peerConnection.close();
                     peerConnection = null;
                 }
+                if (localStream) {
+                    localStream.getTracks().forEach(track => track.stop());
+                }
+                document.getElementById('localVideo').srcObject = null;
+                document.getElementById('remoteVideo').srcObject = null;
                 document.getElementById('status').textContent = 'Chat ended. Click to reconnect.';
                 document.getElementById('skipBtn').disabled = true;
                 document.getElementById('endChat').disabled = true;
-            });
+                isInChat = false;
+                await setupMediaStream(); // Restart media stream
+            }
 
+            // Initialize the app
             setupMediaStream();
         })();
     </script>
