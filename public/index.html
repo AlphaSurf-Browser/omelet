@@ -1,145 +1,119 @@
-<html><head><base href="/" /><title>Omelet - Random Video Chat</title>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
-<meta name="google-site-verification" content="K03AtePYYCXw4LtNBXYuqRS5rzNVPcW1Sbmb6eh4ybc" />
-<meta name="description" content="Connect with new friends on Omelet! Enjoy spontaneous random video chats and meet people from around the world in a fun, safe environment.">
-<style>
-/* Previous CSS remains identical */
-:root {
-  --primary: #ffb700;
-  --secondary: #ff7b00;
-  --dark: #333;
-  --light: #fff;
-}
-
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
-
-body {
-  background: #f0f0f0;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
-
-.header {
-  background: var(--primary);
-  padding: 1rem;
-  text-align: center;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-}
-
-.logo {
-  font-size: 2.5rem;
-  font-weight: bold;
-  color: var(--light);
-  text-shadow: 2px 2px var(--secondary);
-}
-
-.logo span {
-  animation: crack 2s infinite;
-}
-
-@keyframes crack {
-  0% { transform: rotate(0deg); }
-  25% { transform: rotate(-5deg); }
-  75% { transform: rotate(5deg); }
-  100% { transform: rotate(0deg); }
-}
-
-.video-container {
-  max-width: 1200px;
-  margin: 2rem auto;
-  flex-grow: 1;
-  padding: 1rem;
-  background: var(--light);
-  border-radius: 10px;
-  box-shadow: 0 0 15px rgba(0,0,0,0.1);
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
-}
-
-.video-wrapper {
-  position: relative;
-  padding-top: 75%;
-  background: #000;
-  border-radius: 5px;
-  overflow: hidden;
-}
-
-.video-wrapper video {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.controls {
-  grid-column: 1 / -1;
-  text-align: center;
-}
-
-.btn {
-  padding: 0.8rem 2rem;
-  font-size: 1.1rem;
-  border: none;
-  border-radius: 25px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  margin: 0.5rem;
-}
-
-.btn-primary {
-  background: var(--primary);
-  color: var(--light);
-}
-
-.btn-primary:hover {
-  background: var(--secondary);
-  transform: translateY(-2px);
-}
-
-.btn-danger {
-  background: #ff4444;
-  color: var(--light);
-}
-
-.btn-danger:hover {
-  background: #cc0000;
-}
-
-.status {
-  grid-column: 1 / -1;
-  text-align: center;
-  color: var(--dark);
-  margin: 1rem 0;
-  font-style: italic;
-}
-
-footer {
-  text-align: center;
-  padding: 1rem;
-  background: var(--dark);
-  color: var(--light);
-}
-
-.wolftech {
-  font-weight: bold;
-  color: var(--primary);
-}
-</style>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Omelet - Random Video Chat</title>
+  <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
+  <style>
+    /* Same CSS as before */
+    :root {
+      --primary: #ffb700;
+      --secondary: #ff7b00;
+      --dark: #333;
+      --light: #fff;
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    body {
+      background: #f0f0f0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    .header {
+      background: var(--primary);
+      padding: 1rem;
+      text-align: center;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .logo {
+      font-size: 2.5rem;
+      font-weight: bold;
+      color: var(--light);
+      text-shadow: 2px 2px var(--secondary);
+    }
+    .video-container {
+      max-width: 1200px;
+      margin: 2rem auto;
+      flex-grow: 1;
+      padding: 1rem;
+      background: var(--light);
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+    .video-wrapper {
+      position: relative;
+      padding-top: 75%;
+      background: #000;
+      border-radius: 5px;
+      overflow: hidden;
+    }
+    .video-wrapper video {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .controls {
+      grid-column: 1 / -1;
+      text-align: center;
+    }
+    .btn {
+      padding: 0.8rem 2rem;
+      font-size: 1.1rem;
+      border: none;
+      border-radius: 25px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin: 0.5rem;
+    }
+    .btn-primary {
+      background: var(--primary);
+      color: var(--light);
+    }
+    .btn-primary:hover {
+      background: var(--secondary);
+      transform: translateY(-2px);
+    }
+    .btn-danger {
+      background: #ff4444;
+      color: var(--light);
+    }
+    .btn-danger:hover {
+      background: #cc0000;
+    }
+    .status {
+      grid-column: 1 / -1;
+      text-align: center;
+      color: var(--dark);
+      margin: 1rem 0;
+      font-style: italic;
+    }
+    footer {
+      text-align: center;
+      padding: 1rem;
+      background: var(--dark);
+      color: var(--light);
+    }
+    .wolftech {
+      font-weight: bold;
+      color: var(--primary);
+    }
+  </style>
 </head>
 <body>
   <header class="header">
-    <h1 class="logo">Omel<span>e</span>t</h1>
+    <h1 class="logo">Omelet</h1>
   </header>
 
   <main class="video-container">
@@ -149,9 +123,7 @@ footer {
     <div class="video-wrapper">
       <video id="remoteVideo" autoplay playsinline></video>
     </div>
-
     <div class="status" id="status">Initializing...</div>
-
     <div class="controls">
       <button class="btn btn-primary" id="skipBtn" disabled>Skip</button>
       <button class="btn btn-danger" id="endChat" disabled>End Chat</button>
@@ -163,7 +135,7 @@ footer {
   </footer>
 
 <script>
-(function() {
+(async function() {
   let localStream;
   let peerConnection;
   let isInChat = false;
@@ -179,11 +151,10 @@ footer {
         body: JSON.stringify({ ttl: 86400 })
       });
       
-      if (!response.ok) {
-        throw new Error('Failed to fetch TURN credentials');
-      }
-      
-      return await response.json();
+      if (!response.ok) throw new Error('Failed to fetch TURN credentials');
+      const credentials = await response.json();
+      console.log("TURN credentials fetched:", credentials);
+      return credentials;
     } catch (error) {
       console.error('Error fetching TURN credentials:', error);
       return null;
@@ -196,50 +167,32 @@ footer {
     const configuration = {
       iceServers: [
         {
-          urls: [
-            'turn:turn.cloudflare.com:3478'
-          ]
+          urls: 'turn:turn.cloudflare.com:3478', 
+          username: turnCredentials ? turnCredentials.username : null,
+          credential: turnCredentials ? turnCredentials.password : null
         }
       ]
     };
 
-    if (turnCredentials) {
-      configuration.iceServers.push({
-        urls: turnCredentials.urls,
-        username: turnCredentials.username,
-        credential: turnCredentials.credential
-      });
-    }
-
     peerConnection = new RTCPeerConnection(configuration);
+    console.log('Peer connection created with configuration:', configuration);
+
+    localStream.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
+    peerConnection.ontrack = event => document.getElementById('remoteVideo').srcObject = event.streams[0];
     
-    localStream.getTracks().forEach(track => {
-      peerConnection.addTrack(track, localStream);
-    });
-
-    peerConnection.ontrack = event => {
-      document.getElementById('remoteVideo').srcObject = event.streams[0];
-    };
-
     peerConnection.onicecandidate = event => {
-      if (event.candidate) {
-        // In a real app, send this to the signaling server
-        console.log('New ICE candidate:', event.candidate);
-      }
+      if (event.candidate) console.log('New ICE candidate:', event.candidate);
     };
-
+    
     peerConnection.oniceconnectionstatechange = () => {
-      if (peerConnection.iceConnectionState === 'disconnected') {
-        handleDisconnect();
-      }
+      console.log('ICE Connection State changed:', peerConnection.iceConnectionState);
+      if (peerConnection.iceConnectionState === 'disconnected') handleDisconnect();
     };
 
-    // Create offer immediately for auto-connecting
     try {
       const offer = await peerConnection.createOffer();
       await peerConnection.setLocalDescription(offer);
-      // In a real app, send this offer to the signaling server
-      console.log('Created offer:', offer);
+      console.log('Created and set local offer:', offer);
     } catch (error) {
       console.error('Error creating offer:', error);
     }
@@ -247,16 +200,14 @@ footer {
 
   async function setupMediaStream() {
     try {
-      localStream = await navigator.mediaDevices.getUserMedia({
-        video: true,
-        audio: true
-      });
+      localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
       document.getElementById('localVideo').srcObject = localStream;
-      await createPeerConnection(); // Auto-start peer connection
+      console.log('Local media stream initialized');
+      await createPeerConnection();
       document.getElementById('status').textContent = 'Waiting for someone to connect...';
       enableChat();
-    } catch (err) {
-      console.error('Error accessing media devices:', err);
+    } catch (error) {
+      console.error('Error accessing media devices:', error);
       document.getElementById('status').textContent = 'Failed to access camera/microphone';
     }
   }
@@ -264,13 +215,14 @@ footer {
   function handleDisconnect() {
     document.getElementById('remoteVideo').srcObject = null;
     document.getElementById('status').textContent = 'Disconnected';
-    createPeerConnection(); // Auto-reconnect
+    createPeerConnection();
   }
 
   function enableChat() {
     document.getElementById('skipBtn').disabled = false;
     document.getElementById('endChat').disabled = false;
     isInChat = true;
+    console.log('Chat enabled');
   }
 
   function endChat() {
@@ -282,6 +234,7 @@ footer {
     document.getElementById('skipBtn').disabled = true;
     document.getElementById('endChat').disabled = true;
     isInChat = false;
+    console.log('Chat ended');
   }
 
   function init() {
@@ -306,4 +259,5 @@ footer {
   }
 })();
 </script>
-</body></html>
+</body>
+</html>
